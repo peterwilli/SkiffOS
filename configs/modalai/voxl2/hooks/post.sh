@@ -68,6 +68,5 @@ ${HOST_DIR}/bin/mkbootimg \
            --dtb m0054-qrb5165-iot-rb5.dtb \
            --pagesize 4096 \
            --base "0x80000000" \
-           --tags_offset "0x81900000" \
            --cmdline "${KERNEL_CMDLINE}" \
            -o ${BOOT_IMAGE}
