@@ -60,12 +60,25 @@ rm ${SKIFF_IMAGE} || true
 
 # create boot i
 echo "Generating $(basename ${BOOT_IMAGE})..."
-KERNEL_CMDLINE="noinitrd console=ttyMSM0,115200,n8 earlycon=msm_geni_serial,0xa90000 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=2048 net.ifnames=0 audit=0 fsck.repair=yes loglevel=7"
+# console=ttyMSM0,115200,n8
+# console=ttyHSL0,115200,n8
+# earlycon=msm_geni_serial,0xa90000
+# lpm_levels.sleep_disabled=0
+# video=vfb:640x400,bpp=32,memsize=3072000
+# msm_rtb.filter=0x237
+# service_locator.enable=1
+# swiotlb=2048
+KERNEL_CMDLINE="noinitrd rw console=ttyHSL0,115200,n8 console=ttyMSM0,115200,n8 androidboot.hardware=qcom fsck.repair=yes net.ifnames=0 loglevel=7 msm_rtb.filter=0x237 lpm_levels.sleep_disabled=1 ehci-hcd.park=3"
+
+# --ramdisk_offset "0x00008000"
+# --second_offset "0x00f00000"
+# --tags_offset "0x00000100"
+# --header_version 0
+# --hashtype sha1
+
 ${HOST_DIR}/bin/mkbootimg \
            --kernel Image \
            --cmdline "${KERNEL_CMDLINE}" \
+           --pagesize 4096 \
            --base "0x80000000" \
-           --kernel_offset "0x00008000" \
-           --second_offset "0x00f00000" \
-           --tags_offset "0x00000100" \
            -o ${BOOT_IMAGE}
