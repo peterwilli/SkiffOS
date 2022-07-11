@@ -46,6 +46,7 @@ ln -fs /boot/skiff-init/skiff-init-squashfs ${SYSFS_DIR}/lib/systemd/systemd
 echo "Building raw image..."
 ${HOST_DIR}/sbin/mkfs.ext4 \
            -d ${SYSFS_DIR} \
+           -b 4096 \
            -L "sysfs" \
            -U "57f8f4bc-abf4-655f-bf67-946fc0f9f25b" \
            ${SKIFF_IMAGE} "2G"
@@ -61,26 +62,12 @@ rm ${SKIFF_IMAGE} || true
 # create boot image
 echo "Generating $(basename ${BOOT_IMAGE})..."
 
-# console=ttyMSM0,115200,n8
-# console=ttyHSL0,115200,n8
-# earlycon=msm_geni_serial,0xa90000
-# lpm_levels.sleep_disabled=0
-# video=vfb:640x400,bpp=32,memsize=3072000
-# msm_rtb.filter=0x237
-# service_locator.enable=1
-# swiotlb=2048
-KERNEL_CMDLINE="noinitrd rw console=ttyMSM0,115200,n8 fsck.repair=yes net.ifnames=0 loglevel=7 msm_rtb.filter=0x237 lpm_levels.sleep_disabled=1 ehci-hcd.park=3 pcie_pme=nomsi"
-
-# --ramdisk_offset "0x00008000"
-# --second_offset "0x00f00000"
-# --tags_offset "0x00000100"
-# --header_version 0
-# --hashtype sha1
-
+KERNEL_CMDLINE="noinitrd rw rootwait console=ttyMSM0,115200,n8 earlycon=msm_geni_serial,0xa90000 androidboot.hardware=qcom androidboot.console=ttyMSM0 androidboot.memcg=1 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 androidboot.usbcontroller=a600000.dwc3 swiotlb=2048 reboot=panic_warm net.ifnames=0"
 ${HOST_DIR}/bin/mkbootimg \
-           --kernel Image \
-           --dtb m0054-qrb5165-iot-rb5.dtb \
-           --cmdline "${KERNEL_CMDLINE}" \
+           --kernel Image.gz \
+           --dtb qrb5165-rb5.dtb \
            --pagesize 4096 \
            --base "0x80000000" \
+           --tags_offset "0x81900000" \
+           --cmdline "${KERNEL_CMDLINE}" \
            -o ${BOOT_IMAGE}
