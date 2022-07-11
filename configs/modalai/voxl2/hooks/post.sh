@@ -58,8 +58,9 @@ ${HOST_DIR}/bin/img2simg \
 echo "Done, deleting raw image..."
 rm ${SKIFF_IMAGE} || true
 
-# create boot i
+# create boot image
 echo "Generating $(basename ${BOOT_IMAGE})..."
+
 # console=ttyMSM0,115200,n8
 # console=ttyHSL0,115200,n8
 # earlycon=msm_geni_serial,0xa90000
@@ -68,7 +69,7 @@ echo "Generating $(basename ${BOOT_IMAGE})..."
 # msm_rtb.filter=0x237
 # service_locator.enable=1
 # swiotlb=2048
-KERNEL_CMDLINE="noinitrd rw console=ttyHSL0,115200,n8 console=ttyMSM0,115200,n8 androidboot.hardware=qcom fsck.repair=yes net.ifnames=0 loglevel=7 msm_rtb.filter=0x237 lpm_levels.sleep_disabled=1 ehci-hcd.park=3"
+KERNEL_CMDLINE="noinitrd rw console=ttyMSM0,115200,n8 fsck.repair=yes net.ifnames=0 loglevel=7 msm_rtb.filter=0x237 lpm_levels.sleep_disabled=1 ehci-hcd.park=3 pcie_pme=nomsi"
 
 # --ramdisk_offset "0x00008000"
 # --second_offset "0x00f00000"
@@ -78,6 +79,7 @@ KERNEL_CMDLINE="noinitrd rw console=ttyHSL0,115200,n8 console=ttyMSM0,115200,n8 
 
 ${HOST_DIR}/bin/mkbootimg \
            --kernel Image \
+           --dtb m0054-qrb5165-iot-rb5.dtb \
            --cmdline "${KERNEL_CMDLINE}" \
            --pagesize 4096 \
            --base "0x80000000" \
